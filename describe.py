@@ -101,4 +101,5 @@ def print_data(data : dict):
 
 if __name__ == "__main__":
 	analyzed = describe_data(num_data)
-	print_data(analyzed)
+	print(datas.describe())
+	# print_data(analyzed)

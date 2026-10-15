@@ -102,7 +102,6 @@ for i, course in enumerate(courses):
 	if i == 0:
 		ax.legend(fontsize=7)
 	
-# Supprimer les cases inutilisées
 for i in range(len(courses), len(axes)):
 	fig.delaxes(axes[i])
 
