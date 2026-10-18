@@ -1,6 +1,5 @@
 #!usr/bin/env python3
 
-
 #créer 4 classifiers
 #pour chaque classifiers, appliquer algo L : regression logistique
 	#faire une fonction linéaire de type : s = somme (poids_matière_x * note_matière_x) + b
@@ -31,10 +30,7 @@ def norm_notes(lst_notes: list[float]):
 
 
 def	classifier(lst_weights : list[float], lst_notes : list[float], biais : float) -> float:
-	# s = sum(lst_weights[x] * lst_notes[x] for x in range(len(lst_weights))) + biais
 	s = 0
-	# print(len(lst_weights))
-	# print(len(lst_notes))
 	for x in range(len(lst_weights)):
 		s += lst_weights[x] * lst_notes[x]
 	s += biais
@@ -51,20 +47,16 @@ def cost_ft(y : float, p : float) -> float:
 	return x
 
 def gradient_descent(lst_weights : list[float], biais : float, learning_rate : float, nb_notes : int, lst_error : list[float], somme : list[float], nb_eleves : int):
-	# new_poids : list[float] = [0] * nb_notes
 	for i in range(nb_notes):
 		new_poids = learning_rate * (somme[i] / nb_eleves)
 		lst_weights[i] = lst_weights[i] - new_poids
 	new_biais = learning_rate * (sum(lst_error) / nb_eleves)
 	biais = biais - new_biais
 	return biais
-	# print(f"learning_rate : {learning_rate}")
-	# print(f"lst_error : {lst_error}")
-	# print(f"somme : {somme}")
+
 
 def log_reg(lst_weights : list[float], lst_notes : list[list[float]] , house : str, nb_notes : int, nb_eleves : int, biais : float, lst_houses : list[str]) -> float:
-	# print(lst_weights)
-	# print(biais)
+
 	learning_rate = 0.1
 	for count in range (1000):
 		somme : list[float] = [0] * nb_notes
@@ -73,19 +65,14 @@ def log_reg(lst_weights : list[float], lst_notes : list[list[float]] , house : s
 		for i in range (nb_eleves):
 			#y = 1 si classe eleve == classifier, 0 sinon
 			y = 1 if lst_houses[i] == house else 0
-			# print(y)
 			# z = classifier(eleves[i])
 			z = classifier(lst_weights, lst_notes[i], biais)
-			# print(z)
 			#p = sigmoid(z)
 			p = sigmoid(z)
-			# print(f"i : {i}, p : {p}")
 			#x = entropie croisée binaire(y, p)
 			x += cost_ft(y, p)
-			# print(x)
 			#pour chaque poids
 				#poids[j] += (z - y) * notes[i]
-			# print(f"p : [{p}] - y : [{y}]")
 			lst_error.append((p - y))
 			for j in range(nb_notes):
 				somme[j] += lst_error[i] * lst_notes[i][j]
@@ -93,12 +80,9 @@ def log_reg(lst_weights : list[float], lst_notes : list[list[float]] , house : s
 		x_mean = x / nb_eleves
 		# if count % 100 == 0:
 		# 	print(f"perte moyenne : {x_mean}")
-		# print(f"somme : {somme}")
-		# print(f"lst_error : {lst_error}")
+
 		biais = gradient_descent(lst_weights, biais, learning_rate, nb_notes, lst_error, somme, nb_eleves)
 	return biais
-		# print(lst_weights)
-		# print(biais)
 		#descente du gradient :
 			#pour chaque poids 
 				#new_poids = moyenne_x (?) * somme[j] / nb_eleves
@@ -114,10 +98,11 @@ def main() -> None:
 	#log_reg Slytherin -> set lst_weights[slytherin_w]
 	#créer fichier avec poids pour chaque classifier/maison
 	datas = pandas.read_csv(sys.argv[1])
+	datas.drop("Index", axis=1, inplace=True)
 	num_data = datas.select_dtypes(include=[float, int])
 	num_data = num_data.fillna(num_data.mean())
 	nb_eleves = num_data.shape[0]
-	nb_notes = len(num_data.columns[1:])
+	nb_notes = len(num_data.columns)
 	lst_houses = ["Gryffindor", "Hufflepuff", "Ravenclaw", "Slytherin"]
 	lst_all_weights : dict[str, list] = {
 			lst_houses[0] : [0] * nb_notes,
@@ -127,16 +112,12 @@ def main() -> None:
 			}
 	lst_students_houses = list(datas["Hogwarts House"])
 	print(lst_houses)
-	# lst_biais : list[float] = [0, 0, 0, 0]
 	lst_notes = num_data.to_numpy(dtype=float).tolist()
 	for j in range(nb_notes):
 		notes_matiere = [eleve[j] for eleve in lst_notes]
 		norm_notes(notes_matiere)
 		for i in range(nb_eleves):
 			lst_notes[i][j] = notes_matiere[i]
-	# print("Nombre d'élèves :", len(lst_notes))
-	# print("Nombre de matières :", len(lst_notes[0]))
-	# print("Premier élève :", lst_notes[0])
 	i = 0
 	for key in lst_houses:
 		lst_all_weights[key].append(log_reg(lst_all_weights[key], lst_notes, key, nb_notes, nb_eleves, 0, lst_students_houses))

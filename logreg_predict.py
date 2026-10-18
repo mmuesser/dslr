@@ -5,6 +5,7 @@ from logreg_train import classifier, sigmoid, norm_notes
 
 def main():
 	datas = pandas.read_csv(sys.argv[1])
+	datas.drop(["Index", "Hogwarts House"], axis=1, inplace=True)
 	num_data = datas.select_dtypes(include=[float, int])
 	num_data = num_data.fillna(num_data.mean())
 
@@ -18,9 +19,9 @@ def main():
 		lst_biasis.append(data_biasis[col].get(13))
 
 	nb_eleves = num_data.shape[0]
-	nb_notes = len(num_data.columns[1:])
+	nb_notes = len(num_data.columns)
 	lst_notes = num_data.to_numpy(dtype=float).tolist()
-	lst_houses = ["Gryffindor", "Hufflepuf", "Ravenclaw", "Slytherin"]
+	lst_houses = ["Gryffindor", "Hufflepuff", "Ravenclaw", "Slytherin"]
 	for j in range(nb_notes):
 		notes_matiere = [eleve[j] for eleve in lst_notes]
 		norm_notes(notes_matiere)
