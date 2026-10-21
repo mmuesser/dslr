@@ -1,105 +1,100 @@
-#num_data qui contient les colonnes numériques
-#pour chaque colonne calculer count, mean, std, min, 25%, 50%, 75%, max
-#pour chaque element d'index X dans une ligne, calculer sa taille et comparer avec le reste des index X
-#print premier element de chaque ligne normalement
-#puis pour chaque élément à partir du deuxième, print taille_max - taille_elem + 2 espaces puis afficher elem
+#!/usr/bin/env python3
 
-# !/usr/bin/env python3
+# num_data qui contient les colonnes numériques
+# pour chaque colonne calculer count, mean, std, min, 25%, 50%, 75%, max
+# pour chaque element d'index X dans une ligne, calculer sa taille et comparer avec le reste des index X
+# print premier element de chaque ligne normalement
+# puis pour chaque élément à partir du deuxième, print taille_max - taille_elem + 2 espaces puis afficher elem
 
-from numpy import NaN
+
 import pandas, math
+from collections.abc import Callable
+
+from config import *
 
 
-datas = pandas.read_csv("dataset_train.csv")
+datas = pandas.read_csv(CSV_DIR + TRAIN_FILE)
 
 num_data = datas.select_dtypes(include=[float, int])
+num_data.drop(columns=["Index"], inplace=True)
 
-def count_data(col : list):
-	count = 0
-	for x in col:
-		if x is not None and not math.isnan(x):
-			count += 1
-	return f"{count:.6f}"
 
-def mean_data(col : list):
-	count = 0
-	somme = 0
-	for x in col:
-		if x is not None and not math.isnan(x):
-			count += 1
-			somme += x
-	return f"{somme / count:.6f}"
+def cumulate_data(l: Callable[[float], float], col: list) -> float:
+    it = (l(x) for x in col if x is not None and not math.isnan(x))
+    total = 0
+    for x in it:
+        total += x
 
-def std_data(col : list):
-	count = 0
-	somme = 0
-	mean = float(mean_data(col))
-	for x in col:
-		if x is not None and not math.isnan(x):
-			count += 1
-			somme += (x - mean) ** 2
-	return f"{math.sqrt(somme / count):.6f}"
+    return total
 
-def min_data(col : list):
-	min_value = NaN
-	for x in col:
-		if x is not None and not math.isnan(x):
-			if min_value is None or x < min_value:
-				min_value = x
-	return f"{min_value:.6f}"
 
-def quantile_data(col : list, q : float):
-	values = [x for x in col if x is not None and not math.isnan(x)]
-	values.sort()
-	n = len(values)
-	if n == 0:
-		return NaN
-	index = (n - 1) * q
-	lower_index = int(index)
-	upper_index = lower_index + 1
-	if upper_index >= n:
-		return f"{values[lower_index]:.6f}"
-	weight = index - lower_index
-	return f"{values[lower_index] * (1 - weight) + values[upper_index] * weight:.6f}"
+def count_data(col: list) -> float:
+    return cumulate_data(lambda x: 1, col)
+
+
+def mean_data(col: list) -> float:
+    return cumulate_data(lambda x: x, col) / count_data(col)
+
+
+def std_data(col: list) -> float:
+    count = count_data(col)
+    mean = mean_data(col)
+    somme = cumulate_data(lambda x: (x - mean) ** 2, col)
+
+    return math.sqrt(somme / (count - 1))
+
+
+def min_data(col: list) -> float:
+    min_value = math.nan
+    it = (x for x in col if x is not None and not math.isnan(x))
+
+    for x in it:
+        if math.isnan(min_value) or x < min_value:
+            min_value = x
+    return min_value
+
+
+def quantile_data(col: list, q: float) -> float:
+    values = [x for x in col if x is not None and not math.isnan(x)]
+    values.sort()
+    n = len(values)
+    if n == 0:
+        return math.nan
+    index = (n - 1) * q
+    lower_index = int(index)
+    upper_index = lower_index + 1
+    if upper_index >= n:
+        return values[lower_index]
+    weight = index - lower_index
+    return values[lower_index] * (1 - weight) + values[upper_index] * weight
 
 
 def describe_data(num_data) -> dict[str, list]:
-	analyzed : dict[str, list] = {}
-	analyzed["ref"] = ["count", "mean", "std", "min", "25%", "50%", "75%", "max"]
+    analyzed: dict[str, list] = {}
 
-	for col in num_data.columns:
-		analyzed[col] = [
-			count_data(num_data[col]),
-			mean_data(num_data[col]),
-			std_data(num_data[col]),
-			quantile_data(num_data[col], 0),
-			quantile_data(num_data[col], 0.25),
-			quantile_data(num_data[col], 0.5),
-			quantile_data(num_data[col], 0.75),
-			quantile_data(num_data[col], 1),
-		]
-	return analyzed
+    for col in num_data.columns:
+        analyzed[col] = [
+            count_data(num_data[col]),
+            mean_data(num_data[col]),
+            std_data(num_data[col]),
+            quantile_data(num_data[col], 0),
+            quantile_data(num_data[col], 0.25),
+            quantile_data(num_data[col], 0.5),
+            quantile_data(num_data[col], 0.75),
+            quantile_data(num_data[col], 1),
+        ]
+    return analyzed
 
-def print_data(data : dict):
-	# for i in range(0, len(data["ref"])):
-	# 	test : str = ''
-	# 	if i == 0:
-	# 		test += ' '.join(list(data.keys()))
-	# 	else:
-	# 		for value in data.values():
-	# 			test += value[i] + '  '
-	# 	print(test)
-	# for key in data.keys():
-	# 	lenghts = max(list(len(val) for val in data[key]))
-	# 	for ligne in zip(*data.values()):
-	# 		# print(ligne)
-	# 		print((" ").join(ligne))
-			# print((" " * (int(quantile_data(ligne, 1)) - len(val))).join(str(val) for val in ligne))
-			# print(data.values())
-	df = pandas.DataFrame(data)
-	print(df.columns)
+
+def print_data(data: dict):
+
+    df = pandas.DataFrame(
+        data, index=["count", "mean", "std", "min", "25%", "50%", "75%", "max"]
+    )
+    print(df)
+
 
 if __name__ == "__main__":
-	analyzed = describe_data(num_data)
-	print(datas.describe())
-	# print_data(analyzed)
+    analyzed = describe_data(num_data)
+    print(num_data.describe())
+    print_data(analyzed)

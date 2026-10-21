@@ -1,0 +1,10 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[codz]
+*$py.class
+.env
+.venv/
+
+houses.csv
+houses_weights.csv
+
