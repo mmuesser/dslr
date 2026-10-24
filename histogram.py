@@ -13,7 +13,7 @@ def main():
     hogwarts = School()
     hogwarts.insertData(CSV_DIR + TRAIN_FILE)
 
-    fig, axes = plt.subplots(3, 5, figsize=(20, 5))
+    fig, axes = plt.subplots(4, 4, figsize=(16, 8))
     axes = axes.flatten()
 
     for i, course in enumerate(hogwarts.courses):
@@ -27,16 +27,17 @@ def main():
                 alpha=0.55,
                 facecolor=house.color,
                 label=house.name,
-                density=True,
             )
 
         ax.set_title(course, fontsize=8)
         ax.tick_params(axis="both", labelsize=7)
 
-        if i == 0:
-            ax.legend(fontsize=7)
+        legend_ax = axes[15]
+        legend_ax.axis("off")
+        handles, labels = axes[0].get_legend_handles_labels()
+        legend_ax.legend(handles, labels, loc="center", frameon=False)
 
-    for i in range(len(hogwarts.courses), len(axes)):
+    for i in range(len(hogwarts.courses), len(axes) - 1):
         fig.delaxes(axes[i])
 
     fig.tight_layout()
