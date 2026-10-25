@@ -9,9 +9,9 @@ from subject import Subject
 
 
 class Describe:
-    def __init__(self):
+    def __init__(self, file_name):
 
-        datas = pd.read_csv(CSV_DIR + TRAIN_FILE)
+        datas = pd.read_csv(file_name)
         self.num_data = datas.select_dtypes(include=[float, int])
         self.num_data.drop(columns=["Index"], inplace=True)
 
@@ -33,9 +33,8 @@ class Describe:
 
 
 if __name__ == "__main__":
-    desc = Describe()
-
-    print(desc.num_data.describe())
-
+    desc = Describe(CSV_DIR + TRAIN_FILE)
     desc.describe()
     desc.print()
+
+    print(desc.num_data.describe())
