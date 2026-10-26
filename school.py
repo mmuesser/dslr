@@ -14,11 +14,9 @@ class School:
         }
 
     def insertData(self, file_name: str):
-        datas = pandas.read_csv(file_name)
-        num_data = datas.select_dtypes(include=[float, int])
-        num_data.drop(columns=["Index"], inplace=True)
 
-        self.courses = list(num_data.columns)
+        datas = self.extractData(file_name)
+
         self.min_values: dict[str, float] = {}
         self.max_values: dict[str, float] = {}
         for house in self.houses.values():
@@ -26,6 +24,13 @@ class School:
 
         for course in self.courses:
             self.insertCourse(course, datas)
+
+    def extractData(self, file_name):
+        datas = pandas.read_csv(file_name)
+        num_data = datas.select_dtypes(include=[float, int])
+        num_data.drop(columns=["Index"], inplace=True)
+        self.courses = list(num_data.columns)
+        return datas
 
     def insertCourse(self, course: str, datas):
         minimum: float = math.nan
@@ -41,3 +46,20 @@ class School:
             maximum = max(mark, maximum)
         self.min_values[course] = minimum
         self.max_values[course] = maximum
+
+    def insertRawData(self, file_name: str):
+        datas = self.extractData(file_name)
+
+        for house in self.houses.values():
+            house.initRawMarks(self.courses)
+
+        for course in self.courses:
+            self.insertRawCourse(course, datas)
+
+    def insertRawCourse(self, course: str, datas):
+
+        for _, row in datas.iterrows():
+            name: str = str(row["Hogwarts House"])
+            house: House = self.houses[name]
+            mark: float = float(row.get(course))  # type: ignore[arg-type]
+            house.addRawMark(course, mark)
