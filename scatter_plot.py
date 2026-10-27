@@ -34,7 +34,6 @@ for course_1 in hogwarts.courses:
         legend_ax = axes[15]
         legend_ax.axis("off")
         handles, labels = axes[0].get_legend_handles_labels()
-        print(handles, labels)
         legend_ax.legend(handles, labels, loc="center", frameon=False)
 
     for i in range(len(hogwarts.courses), len(axes) - 1):
