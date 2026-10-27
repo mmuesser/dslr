@@ -1,51 +1,63 @@
 #!usr/bin/env python3
 
-#faire une matrice des courses avec dans la diagonale un histogram du course
-#et dans les autres cases le pair plot des deux courses du croisement
-
 
 import matplotlib.pyplot as plt
-import pandas, math
-import numpy as np
-from itertools import combinations
-from scatter_plot import split_data
-
-datas = pandas.read_csv("dataset_train.csv")
-
-features = split_data(datas)
-
-num_features = len(features.keys())
-
-pairs = list(combinations(features, 2))
-
-fig, axes = plt.subplots(num_features, num_features, figsize=(30, 30))
-# axes = axes.flatten()
-
-colors = ["red", "orange", "blue", "green"]
-# bins = np.linspace(min(all_values), max(all_values), 31)
+from school import School
+from config import *
 
 
-for i in range(num_features):
-	for j in range(num_features):
-		ax = axes[i, j]
+def crop_label(text: str) -> str:
+    return (
+        text
+        if len(text) <= MAX_LEGEND_LENGTH
+        else text[: MAX_LEGEND_LENGTH - 3] + "..."
+    )
 
-		if i == j:
-			for house, values, color in zip(list(features[list(features.keys())[i]]), list(features[list(features.keys())[i]].values()), colors):
-				ax.hist(
-					values,
-					bins=31,
-					alpha=0.45,
-					label=house,
-					facecolor=color,
-					density=True,
-				)
-		else:
-			ax.scatter(features[list(features.keys())[i]]["Gryffindor"], features[list(features.keys())[j]]["Gryffindor"], color="red", alpha=0.5)
-			ax.scatter(features[list(features.keys())[i]]["Hufflepuff"], features[list(features.keys())[j]]["Hufflepuff"], color="orange", alpha=0.5)
-			ax.scatter(features[list(features.keys())[i]]["Ravenclaw"], features[list(features.keys())[j]]["Ravenclaw"], color="blue", alpha=0.5)
-			ax.scatter(features[list(features.keys())[i]]["Slytherin"], features[list(features.keys())[j]]["Slytherin"], color="green", alpha=0.5)
-	
-plt.xticks([])
-plt.yticks([])
-fig.tight_layout()
+
+def make_histogram(ax, house):
+    ax.hist(
+        house.rawmarks[course_1],
+        bins=42,
+        alpha=0.45,
+        label=house.name,
+        facecolor=house.color,
+    )
+
+
+def make_scatter(ax, house):
+    ax.scatter(
+        house.rawmarks[course_1],
+        house.rawmarks[course_2],
+        color=house.color,
+        alpha=0.5,
+        s=4,
+    )
+
+
+def make_plot(ax, school):
+    for house in school.houses.values():
+        if i == j:
+            make_histogram(ax, house)
+        else:
+            make_scatter(ax, house)
+
+
+hogwarts = School()
+hogwarts.insertRawData(CSV_DIR + TRAIN_FILE)
+num_courses = len(hogwarts.courses)
+fig, axes = plt.subplots(num_courses, num_courses, figsize=(30, 30))
+
+
+for i, course_1 in enumerate(hogwarts.courses):
+    for j, course_2 in enumerate(hogwarts.courses):
+        ax = axes[i, j]
+        make_plot(ax, hogwarts)
+        ax.set_xticks([])
+        ax.set_yticks([])
+
+    axes[0, i].set_title(crop_label(course_1), fontsize=12, pad=12)
+    axes[i, 0].set_ylabel(
+        crop_label(course_1), fontsize=12, rotation=0, labelpad=60, va="center"
+    )
+
 plt.show()

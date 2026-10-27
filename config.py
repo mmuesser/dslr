@@ -5,3 +5,4 @@ TEST_FILE = "dataset_test.csv"
 WEIGHTS_FILE = "houses_weights.csv"
 HOUSES_FILE = "houses.csv"
 CSV_DIR = "csv/"
+MAX_LEGEND_LENGTH = 12
