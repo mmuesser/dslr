@@ -15,8 +15,9 @@ def setAxe(ax, course_1, course_2, school):
             house.markbook[course_1],
             house.markbook[course_2],
             color=house.color,
-            alpha=0.3,
+            alpha=0.5,
             label=house.name,
+            s=4,
         )
 
         ax.set_xlabel(course_1)
