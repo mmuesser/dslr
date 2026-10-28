@@ -16,7 +16,7 @@ def crop_label(text: str) -> str:
 
 def make_histogram(ax, house):
     ax.hist(
-        house.rawmarks[course_1],
+        house.markbook[course_1],
         bins=42,
         alpha=0.45,
         label=house.name,
@@ -26,8 +26,8 @@ def make_histogram(ax, house):
 
 def make_scatter(ax, house):
     ax.scatter(
-        house.rawmarks[course_1],
-        house.rawmarks[course_2],
+        house.markbook[course_1],
+        house.markbook[course_2],
         color=house.color,
         alpha=0.5,
         s=4,

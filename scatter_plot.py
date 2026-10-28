@@ -12,8 +12,8 @@ hogwarts.insertData(CSV_DIR + TRAIN_FILE)
 def setAxe(ax, course_1, course_2, school):
     for house in school.houses.values():
         ax.scatter(
-            house.rawmarks[course_1],
-            house.rawmarks[course_2],
+            house.markbook[course_1],
+            house.markbook[course_2],
             color=house.color,
             alpha=0.3,
             label=house.name,
