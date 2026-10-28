@@ -40,26 +40,10 @@ class School:
             name: str = str(row["Hogwarts House"])
             house: House = self.houses[name]
             mark: float = float(row.get(course))  # type: ignore[arg-type]
-            house.addMark(course, mark)
 
-            minimum = min(mark, minimum)
-            maximum = max(mark, maximum)
+            house.addMark(course, mark)
+            if not math.isnan(mark):
+                minimum = min(mark, minimum)
+                maximum = max(mark, maximum)
         self.min_values[course] = minimum
         self.max_values[course] = maximum
-
-    def insertRawData(self, file_name: str):
-        datas = self.extractData(file_name)
-
-        for house in self.houses.values():
-            house.initRawMarks(self.courses)
-
-        for course in self.courses:
-            self.insertRawCourse(course, datas)
-
-    def insertRawCourse(self, course: str, datas):
-
-        for _, row in datas.iterrows():
-            name: str = str(row["Hogwarts House"])
-            house: House = self.houses[name]
-            mark: float = float(row.get(course))  # type: ignore[arg-type]
-            house.addRawMark(course, mark)
