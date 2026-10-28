@@ -12,15 +12,6 @@ class House:
         for course in courses:
             self.markbook[course] = []
 
-    def initRawMarks(self, courses: list[str]):
-        for course in courses:
-            self.rawmarks[course] = []
-
     def addMark(self, course: str, mark: float):
-        if not math.isnan(mark):
-            book = self.markbook[course]
-            book.append(mark)
-
-    def addRawMark(self, course: str, mark: float):
-        book = self.rawmarks[course]
+        book = self.markbook[course]
         book.append(mark)

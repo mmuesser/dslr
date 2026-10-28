@@ -43,7 +43,7 @@ def make_plot(ax, school):
 
 
 hogwarts = School()
-hogwarts.insertRawData(CSV_DIR + TRAIN_FILE)
+hogwarts.insertData(CSV_DIR + TRAIN_FILE)
 num_courses = len(hogwarts.courses)
 fig, axes = plt.subplots(num_courses, num_courses, figsize=(30, 30))
 

@@ -6,7 +6,7 @@ from config import *
 
 
 hogwarts = School()
-hogwarts.insertRawData(CSV_DIR + TRAIN_FILE)
+hogwarts.insertData(CSV_DIR + TRAIN_FILE)
 
 
 def setAxe(ax, course_1, course_2, school):
