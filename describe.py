@@ -5,7 +5,7 @@ import pandas as pd
 from config import *
 
 
-from subject import Subject
+from course import Course
 
 
 class Describe:
@@ -19,15 +19,26 @@ class Describe:
         self.analyzed: dict[str, list] = {}
 
         for col in self.num_data.columns:
-            subject = Subject(self.num_data[col])  # type: ignore[arg-type]
-            subject.analyse()
-            self.analyzed[col] = subject.getStats()
+            course = Course(self.num_data[col])  # type: ignore[arg-type]
+            course.analyse()
+            self.analyzed[col] = course.getStats()
 
     def print(self):
 
         df = pd.DataFrame(
             self.analyzed,
-            index=["count", "mean", "std", "min", "25%", "50%", "75%", "max"],
+            index=[
+                "count",
+                "mean",
+                "std",
+                "min",
+                "25%",
+                "50%",
+                "75%",
+                "max",
+                "kurtosis",
+                "skewness",
+            ],
         )
         print(df)
 
@@ -37,4 +48,6 @@ if __name__ == "__main__":
     desc.describe()
     desc.print()
 
-    print(desc.num_data.describe())
+    # print(desc.num_data.describe())
+    # print(desc.num_data.kurtosis())
+    # print(desc.num_data.skew())
