@@ -2,8 +2,10 @@
 
 
 import matplotlib.pyplot as plt
+from matplotlib.axes import Axes
 from school import School
-from config import *
+from house import House
+from config import CSV_DIR, TRAIN_FILE, MAX_LEGEND_LENGTH
 
 
 def crop_label(text: str) -> str:
@@ -14,7 +16,7 @@ def crop_label(text: str) -> str:
     )
 
 
-def make_histogram(ax, house):
+def make_histogram(ax: Axes, house: House):
     ax.hist(
         house.markbook[course_1],
         bins=42,
@@ -24,7 +26,7 @@ def make_histogram(ax, house):
     )
 
 
-def make_scatter(ax, house):
+def make_scatter(ax: Axes, house: House):
     ax.scatter(
         house.markbook[course_1],
         house.markbook[course_2],
@@ -34,7 +36,7 @@ def make_scatter(ax, house):
     )
 
 
-def make_plot(ax, school):
+def make_plot(ax: Axes, school: School):
     for house in school.houses.values():
         if i == j:
             make_histogram(ax, house)

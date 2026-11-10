@@ -1,12 +1,9 @@
-import math
-
-
 class House:
     def __init__(self, name: str, color: str):
         self.name: str = name
         self.color: str = color
-        self.markbook: dict[str, list] = {}
-        self.rawmarks: dict[str, list] = {}
+        self.markbook: dict[str, list[float]] = {}
+        self.rawmarks: dict[str, list[float]] = {}
 
     def initMarkBook(self, courses: list[str]):
         for course in courses:

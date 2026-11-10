@@ -4,9 +4,9 @@ from collections.abc import Callable
 
 
 class Course:
-    def __init__(self, marks: pd.DataFrame):
+    def __init__(self, marks: pd.Series):
         self.marks = marks.dropna()
-        self.marks.sort_values(inplace=True)  # type: ignore[arg-type]
+        self.marks.sort_values(inplace=True)
         self.marks.reset_index(inplace=True, drop=True)
 
         self.count = math.nan
@@ -35,9 +35,9 @@ class Course:
         self.q3 = self.quantile(0.75)
         self.computeKurtosisAndSkewness()
 
-    def cumulate(self, l: Callable[[float], float]) -> float:
+    def cumulate(self, func: Callable[[float], float]) -> float:
         total = 0
-        for x in (l(x) for x in self.marks):
+        for x in (func(x) for x in self.marks):
             total += x
         return total
 
@@ -45,9 +45,9 @@ class Course:
         sum_quad = self.cumulate(lambda x: ((x - self.mean) / self.std) ** 4)
         sum_cub = self.cumulate(lambda x: ((x - self.mean) / self.std) ** 3)
         n = self.count
-        self.kurtosis = ((n * (n + 1) / (n - 1)) * sum_quad - 3 * (n - 1) ** 2) / (
-            (n - 2) * (n - 3)
-        )
+        self.kurtosis = (
+            (n * (n + 1) / (n - 1)) * sum_quad - 3 * (n - 1) ** 2
+        ) / ((n - 2) * (n - 3))
 
         self.skewness = n / ((n - 1) * (n - 2)) * sum_cub
 
@@ -58,7 +58,7 @@ class Course:
         lower_index = int(index)
         upper_index = lower_index + 1
         if upper_index >= self.count:
-            return self.marks.iloc[lower_index]  # type: ignore[arg-type]
+            return self.marks.iloc[lower_index]
         weight = index - lower_index
         return (
             self.marks.iloc[lower_index] * (1 - weight)

@@ -2,7 +2,7 @@
 
 import matplotlib.pyplot as plt
 from school import School
-from config import *
+from config import CSV_DIR, TRAIN_FILE
 
 
 hogwarts = School()

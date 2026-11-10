@@ -1,0 +1,13 @@
+[tool.autopep8]
+max_line_length = 80
+
+[tool.ruff]
+line-length = 80
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
+[tool.pyright]
+typeCheckMode = "strict"
+reportUnknownMemberType = "none"

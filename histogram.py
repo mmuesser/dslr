@@ -18,7 +18,9 @@ def main():
 
     for i, course in enumerate(hogwarts.courses):
         ax = axes[i]
-        bins = np.linspace(hogwarts.min_values[course], hogwarts.max_values[course], 42)
+        bins = np.linspace(
+            hogwarts.min_values[course], hogwarts.max_values[course], 42
+        )
 
         for house in hogwarts.houses.values():
             ax.hist(
