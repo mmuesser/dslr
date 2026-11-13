@@ -1,6 +1,5 @@
 #!usr/bin/env python3
 
-
 import sys
 import math
 import numpy as np
@@ -65,10 +64,8 @@ def log_reg(
     for _ in range(1000):
         predictions = sigmoid(notes @ weights + bias)
 
-        # Entropie croisée binaire (moyenne)
         loss = np.mean(cost_function(y, predictions))
 
-        # Erreurs de prédiction
         errors = predictions - y
 
         weights, bias = gradient_descent(
@@ -91,16 +88,13 @@ def main() -> None:
         .select_dtypes(include="number")
     )
 
-    # Calcul des paramètres de normalisation sur le dataset d'entraînement
     means = numeric_data.mean()
     numeric_data = numeric_data.fillna(means)
 
     stds = numeric_data.std(ddof=0)
 
-    # Évite la division par zéro pour les matières constantes
     scales = stds.mask(stds == 0, 1.0)
 
-    # Normalisation
     notes = ((numeric_data - means) / scales).to_numpy(dtype=float)
 
     students_houses = data["Hogwarts House"].to_numpy()
@@ -131,14 +125,12 @@ def main() -> None:
 
         print(house, all_weights[house])
 
-    # Construction du DataFrame des poids et des biais
     model_data = pd.DataFrame.from_dict(
         all_weights,
         orient="index",
         columns=features + ["Bias"]
     )
 
-    # Ajout des paramètres de normalisation
     for feature in features:
         model_data[f"mean::{feature}"] = means[feature]
         model_data[f"scale::{feature}"] = scales[feature]
