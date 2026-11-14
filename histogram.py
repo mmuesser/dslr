@@ -43,7 +43,7 @@ def main():
         fig.delaxes(axes[i])
 
     fig.tight_layout()
-    plt.show()
+    plt.show()  # type: ignore[arg-type]
 
 
 if __name__ == "__main__":

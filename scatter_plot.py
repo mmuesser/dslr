@@ -1,6 +1,11 @@
 #!usr/bin/env python3
 
+# pyright: reportUnknownMemberType=false
+# pyright: reportUnknownVariableType=false
+# pyright: reportUnknownArgumentType=false
+
 import matplotlib.pyplot as plt
+from matplotlib.axes import Axes
 from school import School
 from config import CSV_DIR, TRAIN_FILE
 
@@ -9,7 +14,7 @@ hogwarts = School()
 hogwarts.insertData(CSV_DIR + TRAIN_FILE)
 
 
-def setAxe(ax, course_1, course_2, school):
+def setAxe(ax: Axes, course_1: str, course_2: str, school: School):
     for house in school.houses.values():
         ax.scatter(
             house.markbook[course_1],

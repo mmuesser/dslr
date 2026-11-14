@@ -17,7 +17,7 @@ class Describe:
         self.analyzed: dict[str, list[float]] = {}
 
         for col in self.num_data.columns:
-            course = Course(self.num_data[col])  # type: ignore[arg-type]
+            course = Course(self.num_data[col])
             course.analyse()
             self.analyzed[col] = course.getStats()
 

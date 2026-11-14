@@ -1,4 +1,4 @@
-import pandas
+import pandas as pd
 import math
 
 from house import House
@@ -25,21 +25,21 @@ class School:
         for course in self.courses:
             self.insertCourse(course, datas)
 
-    def extractData(self, file_name):
-        datas = pandas.read_csv(file_name)
+    def extractData(self, file_name: str) -> pd.DataFrame:
+        datas = pd.read_csv(file_name)
         num_data = datas.select_dtypes(include=[float, int])
         num_data.drop(columns=["Index"], inplace=True)
-        self.courses = list(num_data.columns)
+        self.courses: list[str] = list(num_data.columns)
         return datas
 
-    def insertCourse(self, course: str, datas):
+    def insertCourse(self, course: str, datas: pd.DataFrame):
         minimum: float = math.nan
         maximum: float = math.nan
 
         for _, row in datas.iterrows():
             name: str = str(row["Hogwarts House"])
             house: House = self.houses[name]
-            mark: float = float(row.get(course))  # type: ignore[arg-type]
+            mark: float = float(row[course])
 
             house.addMark(course, mark)
             if not math.isnan(mark):

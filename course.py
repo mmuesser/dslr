@@ -1,6 +1,9 @@
+from __future__ import annotations
+
 import pandas as pd
 import math
-from collections.abc import Callable
+
+from typing import Callable
 
 
 class Course:
