@@ -1,51 +1,55 @@
 #!usr/bin/env python3
 
-import pandas, sys
-from logreg_train import classifier, sigmoid, norm_notes
+import sys
+import numpy as np
+import pandas as pd
+
+from logreg_train import sigmoid
 
 
-def main():
-    datas = pandas.read_csv(sys.argv[1])
-    datas.drop(["Index", "Hogwarts House"], axis=1, inplace=True)
-    num_data = datas.select_dtypes(include=[float, int])
-    num_data = num_data.fillna(num_data.mean())
+def main() -> None:
+    data = pd.read_csv(sys.argv[1])
 
-    data_weights = pandas.read_csv(sys.argv[2])
-    lst_weights = []
-    data_biasis = data_weights.tail(1)
-    lst_biasis = []
-    data_weights.drop(data_weights.tail(1).index, inplace=True)
-    for col in data_weights.columns:
-        lst_weights.append(data_weights[col].tolist())
-        lst_biasis.append(data_biasis[col].get(13))
+    indices = data["Index"]
 
-    nb_eleves = num_data.shape[0]
-    nb_notes = len(num_data.columns)
-    lst_notes = num_data.to_numpy(dtype=float).tolist()
-    lst_houses = ["Gryffindor", "Hufflepuff", "Ravenclaw", "Slytherin"]
-    for j in range(nb_notes):
-        notes_matiere = [eleve[j] for eleve in lst_notes]
-        norm_notes(notes_matiere)
-        for i in range(nb_eleves):
-            lst_notes[i][j] = notes_matiere[i]
+    model = pd.read_csv(sys.argv[2], index_col=0)
 
-    prediction: dict[str, list[str]] = {"Index": [], "Hogwarts House": []}
-    for i in range(nb_eleves):
-        p = 0
-        prediction["Hogwarts House"].append("")
-        for j in range(len(lst_houses)):
-            z = classifier(lst_weights[j], lst_notes[i], lst_biasis[j])
-            if sigmoid(z) > p:
-                p = sigmoid(z)
-                prediction["Hogwarts House"][i] = lst_houses[j]
-        prediction["Index"].append(str(i))
-    df = pandas.DataFrame(prediction)
+    houses = ["Gryffindor", "Hufflepuff", "Ravenclaw", "Slytherin"]
+
+    features = [
+        column
+        for column in model.columns
+        if column != "Bias" and not column.startswith(("mean::", "scale::"))
+    ]
+
+    means = model.iloc[0][
+        [f"mean::{feature}" for feature in features]
+    ].to_numpy(dtype=float)
+
+    scales = model.iloc[0][
+        [f"scale::{feature}" for feature in features]
+    ].to_numpy(dtype=float)
+
+    weights = model.loc[houses, features].to_numpy(dtype=float)
+    biases = model.loc[houses, "Bias"].to_numpy(dtype=float)
+
+    numeric_data = data[features]
+
+    numeric_data = numeric_data.fillna(pd.Series(means, index=features))
+
+    notes = numeric_data.to_numpy(dtype=float)
+
+    notes = (notes - means) / scales
+
+    probabilities = sigmoid(notes @ weights.T + biases)
+
+    predictions = np.array(houses)[np.argmax(probabilities, axis=1)]
+
+    df = pd.DataFrame({"Index": indices, "Hogwarts House": predictions})
+
     df.to_csv("houses.csv", index=False)
 
 
 if __name__ == "__main__":
-    argc = len(sys.argv)
-    if argc != 3:
-        pass
-    else:
+    if len(sys.argv) == 3:
         main()
