@@ -4,6 +4,7 @@ import sys
 import math
 import numpy as np
 import pandas as pd
+from config import TRAIN_FILE, CSV_DIR, WEIGHTS_FILE
 
 
 def normalize_notes(notes: np.ndarray) -> np.ndarray:
@@ -81,7 +82,7 @@ def log_reg(
 
 
 def main() -> None:
-    data = pd.read_csv(sys.argv[1])
+    data = pd.read_csv(CSV_DIR + TRAIN_FILE)
 
     numeric_data = (
         data.drop(columns=["Index", "Hogwarts House"])
@@ -137,9 +138,8 @@ def main() -> None:
 
     model_data.index.name = "Hogwarts House"
 
-    model_data.to_csv("houses_weights.csv")
+    model_data.to_csv(CSV_DIR + WEIGHTS_FILE)
 
 
 if __name__ == "__main__":
-    if len(sys.argv) == 2:
-        main()
+    main()

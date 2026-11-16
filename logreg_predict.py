@@ -5,14 +5,15 @@ import numpy as np
 import pandas as pd
 
 from logreg_train import sigmoid
+from config import TEST_FILE, WEIGHTS_FILE, CSV_DIR, HOUSES_FILE
 
 
 def main() -> None:
-    data = pd.read_csv(sys.argv[1])
+    data = pd.read_csv(CSV_DIR + TEST_FILE)
 
     indices = data["Index"]
 
-    model = pd.read_csv(sys.argv[2], index_col=0)
+    model = pd.read_csv(CSV_DIR + WEIGHTS_FILE, index_col=0)
 
     houses = ["Gryffindor", "Hufflepuff", "Ravenclaw", "Slytherin"]
 
@@ -47,9 +48,8 @@ def main() -> None:
 
     df = pd.DataFrame({"Index": indices, "Hogwarts House": predictions})
 
-    df.to_csv("houses.csv", index=False)
+    df.to_csv(CSV_DIR + HOUSES_FILE, index=False)
 
 
 if __name__ == "__main__":
-    if len(sys.argv) == 3:
-        main()
+    main()
