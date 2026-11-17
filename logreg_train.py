@@ -6,19 +6,16 @@ import numpy as np
 import pandas as pd
 from config import TRAIN_FILE, CSV_DIR, WEIGHTS_FILE
 
+def mean(obj):
+    total : float = 0
+    for elem in obj:
+        total += elem
+    return total / len(obj)
 
-def normalize_notes(notes: np.ndarray) -> np.ndarray:
-    mean = notes.mean()
-    std = notes.std()
-
-    if std == 0:
-        return notes
-
-    return (notes - mean) / std
-
-
-def classifier(weights: np.ndarray, notes: np.ndarray, bias: float) -> float:
-    return np.dot(weights, notes) + bias
+def std(obj, means):
+    sum_square = sum((obj - means) ** 2)
+    variance = sum_square / len(obj)
+    return math.sqrt(variance)
 
 
 def sigmoid(z: np.ndarray) -> np.ndarray:
@@ -40,8 +37,8 @@ def gradient_descent(
     notes: np.ndarray
 ) -> tuple[np.ndarray, float]:
 
-    gradients = np.mean(errors[:, np.newaxis] * notes, axis=0)
-    bias_gradient = errors.mean()
+    gradients = mean(errors[:, np.newaxis] * notes)
+    bias_gradient = mean(errors)
 
     weights -= learning_rate * gradients
     bias -= learning_rate * bias_gradient
@@ -58,14 +55,13 @@ def log_reg(
 ) -> tuple[np.ndarray, float]:
 
     learning_rate = 0.1
-    nb_students = len(notes)
 
     y = (students_houses == house).astype(float)
 
     for _ in range(1000):
         predictions = sigmoid(notes @ weights + bias)
 
-        loss = np.mean(cost_function(y, predictions))
+        loss = mean(cost_function(y, predictions))
 
         errors = predictions - y
 
@@ -89,10 +85,10 @@ def main() -> None:
         .select_dtypes(include="number")
     )
 
-    means = numeric_data.mean()
+    means = numeric_data.apply(lambda column: mean(column.dropna()), axis=0)
     numeric_data = numeric_data.fillna(means)
 
-    stds = numeric_data.std(ddof=0)
+    stds = numeric_data.apply(lambda column : std(column, means[column.name]), axis=0)
 
     scales = stds.mask(stds == 0, 1.0)
 

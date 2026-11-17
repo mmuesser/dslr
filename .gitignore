@@ -7,4 +7,6 @@ __pycache__/
 
 houses.csv
 houses_weights.csv
+dataset_truth.csv
+evaluate.py
 
