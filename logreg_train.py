@@ -50,6 +50,9 @@ def gradient_descent(
 
     return weights, bias
 
+def inverse_time_decay(initial_lr, decay_rate, iteration):
+    return initial_lr / (1 + decay_rate * iteration)
+
 
 def log_reg(
     weights: np.ndarray,
@@ -59,15 +62,21 @@ def log_reg(
     bias: float = 0.0,
 ) -> tuple[np.ndarray, float]:
 
-    learning_rate = 0.01
-    LOOPS = 32000
+    learning_rate = 0.1
+    decay_rate = 0.5
+    LOOPS = 10000
     stats = TrainingStats(LOOPS)
     y = (students_houses == house).astype(float)
 
     max = notes.shape[0]
     print("shape:", max)
 
-    BATCH_SIZE = 50
+    BATCH_SIZE = 1599
+
+    #Nombre de batchs pour parcourir autant de valeurs qu'il y a dans notre set de donnees
+    EPOCH = max / BATCH_SIZE
+
+    print(EPOCH)
     for i in range(LOOPS):
         index_low = random.randrange(max - BATCH_SIZE)
         batch = notes[index_low : index_low + BATCH_SIZE, :]
@@ -82,12 +91,22 @@ def log_reg(
         weights, bias = gradient_descent(
             weights, bias, learning_rate, errors, batch
         )
+        # if BATCH_SIZE == 1 :
+        #     learning_rate = inverse_time_decay(
+        #     0.1,
+        #     decay_rate,
+        #     i)
+        # else :
+        #Toutes les 30 epoques on met le learning rate a jour
+        if i % (EPOCH * 30) == 0:
+            learning_rate = learning_rate * decay_rate
+
+        # print(learning_rate)
+
     predictions = sigmoid(notes @ weights + bias)
     loss = mean(cost_function(y, predictions))
     print(loss)
-    # print(notes[0])
-    # print(weights[0])
-    # print(bias)
+
     stats.plot()
 
     return weights, bias
@@ -120,7 +139,7 @@ def main() -> None:
 
     all_weights = {}
 
-    for house in ["Slytherin"]:  # houses:
+    for house in houses:
         weights = np.zeros(nb_features)
 
         weights, bias = log_reg(weights, notes, house, students_houses)
