@@ -50,6 +50,7 @@ def gradient_descent(
 
     return weights, bias
 
+
 def inverse_time_decay(initial_lr, decay_rate, iteration):
     return initial_lr / (1 + decay_rate * iteration)
 
@@ -91,15 +92,17 @@ def log_reg(
         weights, bias = gradient_descent(
             weights, bias, learning_rate, errors, batch
         )
-        # if BATCH_SIZE == 1 :
-        #     learning_rate = inverse_time_decay(
-        #     0.1,
-        #     decay_rate,
-        #     i)
-        # else :
+        
+        #Methode de mise à jour du learning_rate pour SGD
+        if BATCH_SIZE == 1 :
+            learning_rate = inverse_time_decay(
+            0.1,
+            decay_rate,
+            i)
+        else :
         #Toutes les 30 epoques on met le learning rate a jour
-        if i % (EPOCH * 30) == 0:
-            learning_rate = learning_rate * decay_rate
+            if i % (EPOCH * 30) == 0:
+                learning_rate = learning_rate * decay_rate
 
         # print(learning_rate)
 
