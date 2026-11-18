@@ -4,6 +4,7 @@ __pycache__/
 *$py.class
 .env
 .venv/
+*.png
 
 houses.csv
 houses_weights.csv
