@@ -1,10 +1,9 @@
 #!usr/bin/env python3
 
-import sys
 import numpy as np
 import pandas as pd
 
-from logreg_train import sigmoid
+from ft_math import sigmoid
 from config import TEST_FILE, WEIGHTS_FILE, CSV_DIR, HOUSES_FILE
 
 

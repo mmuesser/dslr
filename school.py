@@ -29,8 +29,14 @@ class School:
         datas = pd.read_csv(file_name)
         num_data = datas.select_dtypes(include=[float, int])
         num_data.drop(columns=["Index"], inplace=True)
-        self.courses: list[str] = list(num_data.columns)
+        self.setCourses(num_data)
         return datas
+
+    def setCourses(self, data: pd.DataFrame) -> None:
+        self.courses: list[str] = data.columns.tolist()
+
+    def getCoursesNb(self) -> int:
+        return len(self.courses)
 
     def insertCourse(self, course: str, datas: pd.DataFrame):
         minimum: float = math.nan

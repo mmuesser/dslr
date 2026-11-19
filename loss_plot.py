@@ -4,7 +4,8 @@ import matplotlib.pyplot as plt
 
 
 class TrainingStats:
-    def __init__(self, loops: int):
+    def __init__(self, house: str, loops: int):
+        self.house = house
         self.loops = loops
         self.records = np.zeros(loops)
 
@@ -25,6 +26,6 @@ class TrainingStats:
 
         ax1.legend(line, ["Loss"])
 
-        fig.suptitle("Training Statistics")
-        plt.savefig("loss.png")
+        fig.suptitle(self.house + "Training Statistics")
+        plt.savefig(self.house + "_loss.png")
         plt.close()
