@@ -1,9 +1,5 @@
 #!usr/bin/env python3
 
-# pyright: reportUnknownMemberType=false
-# pyright: reportUnknownVariableType=false
-# pyright: reportUnknownArgumentType=false
-
 import matplotlib.pyplot as plt
 from matplotlib.axes import Axes
 from school import School
@@ -27,7 +23,6 @@ def setAxe(ax: Axes, course_1: str, course_2: str, school: School):
 
         ax.set_xlabel(course_1)
         ax.set_ylabel(course_2)
-        # ax.set_title(f"{x} vs {y}")
 
 
 for course_1 in hogwarts.courses:

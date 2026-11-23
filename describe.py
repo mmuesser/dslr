@@ -45,7 +45,3 @@ if __name__ == "__main__":
     desc = Describe(CSV_DIR + TRAIN_FILE)
     desc.describe()
     desc.print()
-
-    # print(desc.num_data.describe())
-    # print(desc.num_data.kurtosis())
-    # print(desc.num_data.skew())

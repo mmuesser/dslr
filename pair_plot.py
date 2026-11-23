@@ -1,9 +1,5 @@
 #!usr/bin/env python3
 
-# pyright: reportUnknownMemberType=false
-# pyright: reportUnknownVariableType=false
-# pyright: reportUnknownArgumentType=false
-
 import matplotlib.pyplot as plt
 from matplotlib.axes import Axes
 from school import School
