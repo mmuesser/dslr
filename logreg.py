@@ -17,6 +17,7 @@ class LogReg:
         self.weights = np.zeros(notes.shape[1])
         self.bias: float = 0.0
         self.learning_rate: float = 0.1
+        self.y = (students_houses == house).astype(float)
 
     def cost_function(self, y: np.ndarray, p: np.ndarray) -> np.ndarray:
         eps = 1e-15
@@ -40,11 +41,16 @@ class LogReg:
     ) -> float:
         return initial_lr / (1 + decay_rate * iteration)
 
-    def compute(self, batch: np.ndarray, y_batch: np.ndarray) -> float:
+    def updateParams(self, batch: np.ndarray, y_batch: np.ndarray) -> float:
         predictions = fm.sigmoid(batch @ self.weights + self.bias)
         errors = predictions - y_batch
         self.gradient_descent(errors, batch)
         return fm.mean(self.cost_function(y_batch, predictions))
+
+    def printLoss(self):
+        predictions = fm.sigmoid(self.notes @ self.weights + self.bias)
+        loss = fm.mean(self.cost_function(self.y, predictions))
+        print(loss)
 
 
 class Batch(LogReg):
@@ -57,18 +63,14 @@ class Batch(LogReg):
         super().__init__(notes, house, students_houses)
         self.LOOPS = 10000
         self.stats = TrainingStats(house, self.LOOPS)
-        self.y = (students_houses == house).astype(float)
         self.learning_rate = 0.05
 
     def predict(self) -> tuple[np.ndarray, float]:
         for i in range(self.LOOPS):
-            loss = self.compute(self.notes, self.y)
+            loss = self.updateParams(self.notes, self.y)
             self.stats.records[i] = loss
 
-        predictions = fm.sigmoid(self.notes @ self.weights + self.bias)
-        loss = fm.mean(self.cost_function(self.y, predictions))
-        print(loss)
-
+        self.printLoss()
         self.stats.plot()
 
         return self.weights, self.bias
@@ -84,11 +86,9 @@ class MiniBatch(LogReg):
         super().__init__(notes, house, students_houses)
         self.decay_rate: float = 0.5
         self.LOOPS = 10000
-        self.stats = TrainingStats(house, self.LOOPS)
-        self.y = (students_houses == house).astype(float)
-        self.max = notes.shape[0]
         self.BATCH_SIZE = 50
-
+        self.stats = TrainingStats(house, self.LOOPS)
+        self.max = notes.shape[0]
         self.EPOCH = self.max / self.BATCH_SIZE
 
         print(self.EPOCH)
@@ -99,15 +99,12 @@ class MiniBatch(LogReg):
             batch = self.notes[index_low : index_low + self.BATCH_SIZE, :]
             y_batch = self.y[index_low : index_low + self.BATCH_SIZE]
 
-            loss = self.compute(batch, y_batch)
+            loss = self.updateParams(batch, y_batch)
             self.stats.records[i] = loss
             if i % (self.EPOCH * 30) == 0:
                 self.learning_rate *= self.decay_rate
 
-        predictions = fm.sigmoid(self.notes @ self.weights + self.bias)
-        loss = fm.mean(self.cost_function(self.y, predictions))
-        print(loss)
-
+        self.printLoss()
         self.stats.plot()
 
         return self.weights, self.bias
@@ -125,7 +122,6 @@ class Stochastic(LogReg):
         self.learning_rate = 0.01
         self.LOOPS = 10000
         self.stats = TrainingStats(house, self.LOOPS)
-        self.y = (students_houses == house).astype(float)
         self.max = notes.shape[0]
 
     def predict(self) -> tuple[np.ndarray, float]:
@@ -134,16 +130,13 @@ class Stochastic(LogReg):
             batch = self.notes[index_low : index_low + 1, :]
             y_batch = self.y[index_low : index_low + 1]
 
-            loss = self.compute(batch, y_batch)
+            loss = self.updateParams(batch, y_batch)
             self.stats.records[i] = loss
             self.learning_rate = self.inverse_time_decay(
                 0.1, self.decay_rate, i
             )
 
-        predictions = fm.sigmoid(self.notes @ self.weights + self.bias)
-        loss = fm.mean(self.cost_function(self.y, predictions))
-        print(loss)
-
+        self.printLoss()
         self.stats.plot()
 
         return self.weights, self.bias
