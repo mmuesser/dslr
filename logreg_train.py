@@ -12,9 +12,15 @@ import ft_math as fm
 def main(method: str) -> None:
     data = pd.read_csv(CSV_DIR + TRAIN_FILE)
 
-    numeric_data = data.drop(columns=["Index", "Hogwarts House"]).select_dtypes(
-        include="number"
-    )
+    numeric_data = data.drop(
+        columns=[
+            "Index",
+            "Hogwarts House",
+            "Arithmancy",
+            "Care of Magical Creatures",
+            "Astronomy",
+        ]
+    ).select_dtypes(include="number")
 
     means = numeric_data.apply(lambda column: fm.mean(column.dropna()), axis=0)
     numeric_data = numeric_data.fillna(means)
