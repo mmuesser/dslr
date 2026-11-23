@@ -55,7 +55,6 @@ class Batch(LogReg):
         students_houses: np.ndarray,
     ):
         super().__init__(notes, house, students_houses)
-        self.decay_rate: float = 0.5
         self.LOOPS = 10000
         self.stats = TrainingStats(house, self.LOOPS)
         self.y = (students_houses == house).astype(float)
@@ -90,8 +89,6 @@ class MiniBatch(LogReg):
         self.max = notes.shape[0]
         self.BATCH_SIZE = 50
 
-        # Nombre de batchs pour parcourir autant de valeurs qu'il y astype
-        # dans notre set de donnees
         self.EPOCH = self.max / self.BATCH_SIZE
 
         print(self.EPOCH)
@@ -124,7 +121,8 @@ class Stochastic(LogReg):
         students_houses: np.ndarray,
     ):
         super().__init__(notes, house, students_houses)
-        self.decay_rate: float = 0.5
+        self.decay_rate: float = 0.01
+        self.learning_rate = 0.01
         self.LOOPS = 10000
         self.stats = TrainingStats(house, self.LOOPS)
         self.y = (students_houses == house).astype(float)

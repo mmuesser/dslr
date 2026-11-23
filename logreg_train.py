@@ -43,7 +43,7 @@ def main(method: str) -> None:
             logreg = Batch(notes, house, students_houses)
         else:
             print(
-                "Invalid Method name. Expected: batch or minibatch or stochastic",
+                "Invalid Method name. Expected: batch or minibatch or sgd",
                 file=sys.stderr,
             )
             exit(1)
