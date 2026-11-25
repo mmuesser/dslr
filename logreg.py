@@ -30,7 +30,7 @@ class LogReg:
         errors: np.ndarray,
         notes: np.ndarray,
     ):
-        gradients = fm.mean(errors[:, np.newaxis] * notes)
+        gradients = fm.mean(errors.reshape(-1,1) * notes)
         bias_gradient = fm.mean(errors)
 
         self.weights -= self.learning_rate * gradients
@@ -50,7 +50,7 @@ class LogReg:
     def printLoss(self):
         predictions = fm.sigmoid(self.notes @ self.weights + self.bias)
         loss = fm.mean(self.cost_function(self.y, predictions))
-        print(loss)
+        print(f"Loss: {loss}")
 
 
 class Batch(LogReg):
@@ -90,8 +90,6 @@ class MiniBatch(LogReg):
         self.stats = TrainingStats(house, self.LOOPS)
         self.max = notes.shape[0]
         self.EPOCH = self.max / self.BATCH_SIZE
-
-        print(self.EPOCH)
 
     def predict(self) -> tuple[np.ndarray, float]:
         for i in range(self.LOOPS):

@@ -54,11 +54,11 @@ def main(method: str) -> None:
             )
             exit(1)
 
+        print(house)
         weights, bias = logreg.predict()
-
         all_weights[house] = np.append(weights, bias)
-
-        print(house, all_weights[house])
+        print(f"Weights: {all_weights[house]}")
+        print()
 
     model_data = pd.DataFrame.from_dict(
         all_weights, orient="index", columns=hogwarts.courses + ["Bias"]
